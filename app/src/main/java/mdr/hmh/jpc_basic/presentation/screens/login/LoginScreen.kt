@@ -1,4 +1,4 @@
-package mdr.hmh.jpc_basic.screens
+package mdr.hmh.jpc_basic.presentation.screens
 
 
 import androidx.compose.foundation.Image
@@ -33,11 +33,18 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import mdr.hmh.jpc_basic.R
+import mdr.hmh.jpc_basic.presentation.component.EventDialog
 import mdr.hmh.jpc_basic.presentation.component.RoundedButton
 import mdr.hmh.jpc_basic.presentation.component.TransparentTextField
+import mdr.hmh.jpc_basic.presentation.screens.login.LoginState
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    state: LoginState,
+    onLogin: (String, String) -> Unit,
+    onNavigateToRegister: () -> Unit,
+    onDismissDialog: () -> Unit
+) {
 
     val emailValue = rememberSaveable { mutableStateOf("") }
     val passwordValue = rememberSaveable { mutableStateOf("") }
@@ -115,8 +122,11 @@ fun LoginScreen() {
                                 textLabel = "Password",
                                 keyboardType = KeyboardType.Password,
                                 keyboardActions = KeyboardActions(
-                                    onNext = {
+                                    onDone = {
                                         focusManger.clearFocus()
+
+                                        onLogin(emailValue.value, passwordValue.value)
+
                                     }
                                 ),
                                 imeAction = ImeAction.Done,
@@ -150,9 +160,9 @@ fun LoginScreen() {
                         ) {
                             RoundedButton(
                                 text = "Login",
-                                displayProgressBar = false,
+                                displayProgressBar = state.displayProgressBar,
                                 onClick = {
-
+                                    onLogin(emailValue.value, passwordValue.value)
                                 }
                             )
                             ClickableText(
@@ -168,7 +178,7 @@ fun LoginScreen() {
                                     }
                                 }
                             ) {
-
+                                onNavigateToRegister()
                             }
                         }
                     }
@@ -183,7 +193,7 @@ fun LoginScreen() {
                         },
                     backgroundColor = MaterialTheme.colors.primary,
                     onClick = {
-
+                        onNavigateToRegister()
                     }
                 ) {
                     Icon(
@@ -196,6 +206,12 @@ fun LoginScreen() {
             }
 
 
+        }
+        if (state.errorMessage != null) {
+            EventDialog(
+                errorMessage = state.errorMessage,
+                onDismiss = onDismissDialog
+            )
         }
     }
 }

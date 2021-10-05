@@ -1,4 +1,4 @@
-package mdr.hmh.jpc_basic.screens.registration
+package mdr.hmh.jpc_basic.presentation.screens.registration
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import mdr.hmh.jpc_basic.presentation.component.EventDialog
 import mdr.hmh.jpc_basic.presentation.component.RoundedButton
 import mdr.hmh.jpc_basic.presentation.component.SocialMediaButton
 import mdr.hmh.jpc_basic.presentation.component.TransparentTextField
@@ -33,9 +34,14 @@ import mdr.hmh.jpc_basic.ui.theme.FACEBOOKCOLOR
 import mdr.hmh.jpc_basic.ui.theme.GMAILCOLOR
 
 @Composable
-fun RegistrationScreen() {
+fun RegistrationScreen(
+    state: RegisterState,
+    onRegister: (String, String, String, String, String) -> Unit,
+    onBack: () -> Unit,
+    onDismissDialog: () -> Unit
+) {
 
-    val numaValue = remember { mutableStateOf("") }
+    val nameValue = remember { mutableStateOf("") }
     val emailValue = remember { mutableStateOf("") }
     val phoneNumberValue = remember { mutableStateOf("") }
     val passwordValue = remember { mutableStateOf("") }
@@ -52,6 +58,7 @@ fun RegistrationScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             Row(
@@ -60,7 +67,7 @@ fun RegistrationScreen() {
                 ) {
                 IconButton(
                     onClick = {
-                        //TODO("BACK BUTTON")
+                        onBack()
                     }
                 ) {
                     Icon(
@@ -87,20 +94,9 @@ fun RegistrationScreen() {
                 verticalArrangement = Arrangement.spacedBy(15.dp)
             ) {
 
-                TransparentTextField(
-                    textFieldValue = numaValue,
-                    textLabel = "Name",
-                    keyboardType = KeyboardType.Text,
-                    keyboardActions = KeyboardActions(
-                        onNext = {
-                            focusManager.moveFocus(FocusDirection.Down)
-                        }
-                    ),
-                    imeAction = ImeAction.Next
-                )
 
                 TransparentTextField(
-                    textFieldValue = numaValue,
+                    textFieldValue = nameValue,
                     textLabel = "Name",
                     keyboardType = KeyboardType.Text,
                     keyboardActions = KeyboardActions(
@@ -165,8 +161,16 @@ fun RegistrationScreen() {
                     textLabel = "Confirm Password",
                     keyboardType = KeyboardType.Password,
                     keyboardActions = KeyboardActions(
-                        onNext = {
+                        onDone = {
                             focusManager.clearFocus()
+
+                            onRegister(
+                                nameValue.value,
+                                emailValue.value,
+                                phoneNumberValue.value,
+                                passwordValue.value,
+                                confirmedPasswordValue.value
+                            )
                         }
                     ),
                     imeAction = ImeAction.Done,
@@ -187,9 +191,15 @@ fun RegistrationScreen() {
                 Spacer(modifier = Modifier.height(16.dp))
                 RoundedButton(
                     text = "Sign Up",
-                    displayProgressBar = false,
+                    displayProgressBar = state.displayProgressBar,
                     onClick = {
-                        //TODO("REGISTER")
+                        onRegister(
+                            nameValue.value,
+                            emailValue.value,
+                            phoneNumberValue.value,
+                            passwordValue.value,
+                            confirmedPasswordValue.value
+                        )
                     }
                 )
                 ClickableText(text = buildAnnotatedString {
@@ -203,7 +213,7 @@ fun RegistrationScreen() {
                         append("Log In")
                     }
                 }, onClick = {
-                    //TODO("BACK")
+                    onBack()
                 }
                 )
             }
@@ -261,6 +271,13 @@ fun RegistrationScreen() {
             }
 
 
+        }
+
+        if (state.errorMessage != null) {
+            EventDialog(
+                errorMessage = state.errorMessage,
+                onDismiss = onDismissDialog
+            )
         }
 
     }
