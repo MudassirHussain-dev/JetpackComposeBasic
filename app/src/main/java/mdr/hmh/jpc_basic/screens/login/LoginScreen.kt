@@ -123,7 +123,8 @@ fun LoginScreen() {
                                 trailingIcon = {
                                     IconButton(onClick = {
                                         passwordVisible = !passwordVisible
-                                    }) {
+                                    }
+                                    ) {
                                         Icon(
                                             imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                                             contentDescription = "password"
