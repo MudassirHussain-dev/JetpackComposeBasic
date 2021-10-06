@@ -7,15 +7,10 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.window.isPopupLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavGraphNavigator
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -27,6 +22,7 @@ import mdr.hmh.jpc_basic.presentation.screens.login.LoginViewModel
 import mdr.hmh.jpc_basic.presentation.screens.registration.RegisterViewModel
 import mdr.hmh.jpc_basic.presentation.screens.registration.RegistrationScreen
 import mdr.hmh.jpc_basic.ui.theme.JPC_BasicTheme
+
 
 @ExperimentalAnimationApi
 @AndroidEntryPoint
@@ -46,6 +42,7 @@ class MainActivity : ComponentActivity() {
                         addLogin(navController = naveController)
 
                         addRegister(navController = naveController)
+
                         addHome()
 
                     }
@@ -93,8 +90,8 @@ class MainActivity : ComponentActivity() {
                 LaunchedEffect(key1 = Unit) {
                     navController.navigate(
                         Destination.Home.route + "/$email" + "/$password"
-                    ){
-                        popUpTo(Destination.Login.route){
+                    ) {
+                        popUpTo(Destination.Login.route) {
                             inclusive = true
                         }
                     }
@@ -106,7 +103,6 @@ class MainActivity : ComponentActivity() {
                     onLogin = viewModel::login,
                     onNavigateToRegister = {
                         navController.navigate(Destination.Register.route)
-
                     },
                     onDismissDialog = viewModel::hideErrorDialog
 
@@ -156,17 +152,18 @@ class MainActivity : ComponentActivity() {
             )
         }
 
-
     }
 
     fun NavGraphBuilder.addHome() {
         composable(
-            route = Destination.Home.route + "/{email}" + "{password}",
+           route = Destination.Home.route + "/{email}" + "/{password}",
+
             arguments = Destination.Home.arguments
         ) {
             val email = it.arguments?.getString("email") ?: ""
             val password = it.arguments?.getString("password") ?: ""
-            HomeScreen(email = email, password = password)
+
+            HomeScreen(email, password)
         }
 
     }
